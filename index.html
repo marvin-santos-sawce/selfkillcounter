@@ -3,263 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Suicide Counter</title>
+<title>Dias sem acidentes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --ink:#3B2E38;
-    --paper:#FBF6F1;
-    --paper-deep:#F1E7DF;
-    --rose:#B8798A;
-    --rose-deep:#8C5468;
-    --wine:#7A3B52;
-    --wine-deep:#57273A;
-    --sage:#8CA090;
-    --taupe:#998A93;
-    --gold:#C9A876;
-    --line:#E4D6CC;
-  }
-
-  *{box-sizing:border-box;}
-
-  html,body{
-    margin:0;
-    min-height:100%;
-    background:
-      radial-gradient(ellipse at 50% -10%, #FFFDFB 0%, var(--paper) 55%, var(--paper-deep) 100%);
-    color:var(--ink);
-    font-family:'Manrope', sans-serif;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:28px;
-  }
-
-  .stage{
-    width:100%;
-    max-width:640px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:24px;
-  }
-
-  .board{
-    position:relative;
-    width:100%;
-    background: #FFFDFB;
-    border:1px solid var(--line);
-    border-radius:28px;
-    padding:48px 40px 38px;
-    box-shadow:
-      0 40px 70px -35px rgba(87, 39, 58, 0.28),
-      0 2px 0 rgba(255,255,255,0.6) inset;
-  }
-
-  .board::before{
-    content:"";
-    position:absolute;
-    inset:10px;
-    border:1px solid var(--line);
-    border-radius:20px;
-    pointer-events:none;
-  }
-
-  .ornament-row{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:14px;
-    margin-bottom:4px;
-  }
-
-  .ornament-row svg{ opacity:0.55; }
-
-  .eyebrow{
-    text-align:center;
-    font-size:11.5px;
-    letter-spacing:0.24em;
-    text-transform:uppercase;
-    color:var(--rose-deep);
-    margin:0 0 14px;
-    font-weight:600;
-  }
-
-  .headline{
-    text-align:center;
-    font-family:'Fraunces', serif;
-    font-optical-sizing:auto;
-    font-weight:500;
-    font-style:italic;
-    font-size:clamp(19px, 3.2vw, 25px);
-    color:var(--ink);
-    margin:0 0 28px;
-  }
-
-  .counter-row{
-    display:flex;
-    justify-content:center;
-    align-items:flex-end;
-    gap:clamp(8px, 3vw, 22px);
-    flex-wrap:nowrap;
-  }
-
-  .unit{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    min-width:0;
-  }
-
-  .unit .value{
-    font-family:'Fraunces', serif;
-    font-optical-sizing:auto;
-    font-weight:500;
-    font-variant-numeric: tabular-nums;
-    font-size:clamp(46px, 13vw, 92px);
-    line-height:0.95;
-    color:var(--wine);
-  }
-
-  .unit.hours .value,
-  .unit.minutes .value,
-  .unit.seconds .value{
-    font-size:clamp(24px, 5.6vw, 40px);
-    font-weight:400;
-    color:var(--rose-deep);
-    opacity:0.85;
-  }
-
-  .unit .label{
-    font-size:10.5px;
-    letter-spacing:0.16em;
-    text-transform:uppercase;
-    color:var(--taupe);
-    margin-top:6px;
-    font-weight:600;
-  }
-
-  .colon{
-    font-family:'Fraunces', serif;
-    font-weight:400;
-    font-size:clamp(18px, 4vw, 30px);
-    color:var(--line);
-    padding-bottom:16px;
-  }
-
-  .divider{
-    width:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    margin:32px 0 20px;
-  }
-  .divider .line{
-    height:1px;
-    flex:1;
-    background:var(--line);
-  }
-  .divider .dot{
-    width:5px;height:5px;
-    border-radius:50%;
-    background:var(--gold);
-  }
-
-  .meta{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    font-size:11.5px;
-    letter-spacing:0.02em;
-    color:var(--taupe);
-    flex-wrap:wrap;
-    gap:10px;
-  }
-
-  .meta strong{
-    color:var(--ink);
-    font-weight:700;
-  }
-
-  .status-dot{
-    display:inline-block;
-    width:7px;height:7px;
-    border-radius:50%;
-    background:var(--sage);
-    box-shadow:0 0 6px rgba(140,160,144,0.6);
-    margin-right:6px;
-  }
-
-  .reset-wrap{
-    width:100%;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:12px;
-  }
-
-  .reset-btn{
-    width:100%;
-    max-width:420px;
-    padding:18px 20px;
-    border-radius:999px;
-    border:none;
-    cursor:pointer;
-    font-family:'Manrope', sans-serif;
-    font-weight:700;
-    font-size:14.5px;
-    letter-spacing:0.03em;
-    color:#FBF6F1;
-    background: linear-gradient(180deg, var(--wine), var(--wine-deep));
-    box-shadow:
-      0 14px 30px -10px rgba(87, 39, 58, 0.55),
-      0 1px 0 rgba(255,255,255,0.15) inset;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-  }
-
-  .reset-btn:hover{
-    transform: translateY(-1px);
-    box-shadow:
-      0 18px 34px -10px rgba(87, 39, 58, 0.6),
-      0 1px 0 rgba(255,255,255,0.15) inset;
-  }
-
-  .reset-btn:active{
-    transform: translateY(1px);
-  }
-
-  .reset-btn.confirm{
-    background: linear-gradient(180deg, var(--rose), var(--rose-deep));
-  }
-
-  .reset-icon{
-    font-size:15px;
-    line-height:1;
-  }
-
-  .hint{
-    font-size:11px;
-    color:var(--taupe);
-    text-align:center;
-    letter-spacing:0.02em;
-    min-height:14px;
-  }
-
-  @media (max-width:480px){
-    .board{padding:38px 22px 30px;}
-    .counter-row{gap:6px;}
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .reset-btn{transition:none;}
-  }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -282,8 +29,8 @@
       </svg>
     </div>
 
-    <p class="eyebrow">SETEMBRO AMARELO DA CENTRALIDADE</p>
-    <h1 class="headline">Estamos em um total de</h1>
+    <p class="eyebrow">Nosso time</p>
+    <h1 class="headline">Estamos há</h1>
 
     <div class="counter-row">
       <div class="unit days">
@@ -307,7 +54,7 @@
       </div>
     </div>
 
-    <h1 class="headline" style="margin-top:18px; margin-bottom:0;">sem falar que quer se matar</h1>
+    <h1 class="headline" style="margin-top:18px; margin-bottom:0;">sem acidentes</h1>
 
     <div class="divider">
       <span class="line"></span>
@@ -318,6 +65,7 @@
     <div class="meta">
       <span><span class="status-dot"></span>Desde <strong id="reset-since">—</strong></span>
       <span>Recorde: <strong id="record-value">0 dias</strong></span>
+      <span>Reinícios: <strong id="reset-count">0</strong></span>
     </div>
   </div>
 
@@ -330,124 +78,6 @@
   </div>
 </div>
 
-<script>
-(function(){
-  const KEY_RESET = 'accident-counter:reset-epoch';
-  const KEY_RECORD = 'accident-counter:record-ms';
-  const TZ = 'America/Sao_Paulo';
-
-  const elDays = document.getElementById('val-days');
-  const elHours = document.getElementById('val-hours');
-  const elMinutes = document.getElementById('val-minutes');
-  const elSeconds = document.getElementById('val-seconds');
-  const elSince = document.getElementById('reset-since');
-  const elRecord = document.getElementById('record-value');
-  const btn = document.getElementById('reset-btn');
-  const btnLabel = document.getElementById('reset-label');
-  const hint = document.getElementById('reset-hint');
-
-  let resetEpoch = null;
-  let recordMs = 0;
-  let confirming = false;
-  let confirmTimeout = null;
-
-  function pad(n){ return String(n).padStart(2,'0'); }
-
-  function formatBrasiliaDate(epochMs){
-    return new Date(epochMs).toLocaleString('pt-BR', {
-      timeZone: TZ,
-      day:'2-digit', month:'2-digit', year:'numeric',
-      hour:'2-digit', minute:'2-digit'
-    });
-  }
-
-  function formatDays(ms){
-    const d = Math.floor(ms / 86400000);
-    return d + (d === 1 ? ' dia' : ' dias');
-  }
-
-  async function loadState(){
-    try{
-      const r = await window.storage.get(KEY_RESET, false);
-      resetEpoch = r ? parseInt(r.value, 10) : null;
-    }catch(e){ resetEpoch = null; }
-
-    if(!resetEpoch){
-      resetEpoch = Date.now();
-      try{ await window.storage.set(KEY_RESET, String(resetEpoch), false); }catch(e){}
-    }
-
-    try{
-      const rec = await window.storage.get(KEY_RECORD, false);
-      recordMs = rec ? parseInt(rec.value, 10) : 0;
-    }catch(e){ recordMs = 0; }
-
-    elSince.textContent = formatBrasiliaDate(resetEpoch);
-    tick();
-  }
-
-  function tick(){
-    const now = Date.now();
-    const diff = Math.max(0, now - resetEpoch);
-
-    const days = Math.floor(diff / 86400000);
-    const hours = Math.floor((diff % 86400000) / 3600000);
-    const minutes = Math.floor((diff % 3600000) / 60000);
-    const seconds = Math.floor((diff % 60000) / 1000);
-
-    elDays.textContent = days;
-    elHours.textContent = pad(hours);
-    elMinutes.textContent = pad(minutes);
-    elSeconds.textContent = pad(seconds);
-
-    const currentRecord = Math.max(recordMs, diff);
-    elRecord.textContent = formatDays(currentRecord);
-  }
-
-  async function persistRecordIfNeeded(){
-    const diff = Date.now() - resetEpoch;
-    if(diff > recordMs){
-      recordMs = diff;
-      try{ await window.storage.set(KEY_RECORD, String(recordMs), false); }catch(e){}
-    }
-  }
-
-  function resetConfirmUI(){
-    confirming = false;
-    btn.classList.remove('confirm');
-    btnLabel.textContent = 'Reiniciar contagem';
-    hint.textContent = 'Toque para confirmar';
-  }
-
-  btn.addEventListener('click', async function(){
-    if(!confirming){
-      confirming = true;
-      btn.classList.add('confirm');
-      btnLabel.textContent = 'Confirmar reinício';
-      hint.textContent = 'Toque de novo — isso não pode ser desfeito';
-      clearTimeout(confirmTimeout);
-      confirmTimeout = setTimeout(resetConfirmUI, 4000);
-      return;
-    }
-
-    clearTimeout(confirmTimeout);
-    await persistRecordIfNeeded();
-
-    resetEpoch = Date.now();
-    try{ await window.storage.set(KEY_RESET, String(resetEpoch), false); }catch(e){}
-
-    elSince.textContent = formatBrasiliaDate(resetEpoch);
-    resetConfirmUI();
-    tick();
-  });
-
-  loadState();
-  setInterval(async function(){
-    tick();
-    await persistRecordIfNeeded();
-  }, 1000);
-})();
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>

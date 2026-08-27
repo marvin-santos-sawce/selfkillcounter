@@ -8,12 +8,27 @@
 // Veja o passo a passo completo no README.md deste projeto.
 // ============================================================
 
-export const firebaseConfig = {
-  apiKey: "SUA_API_KEY_AQUI",
-  authDomain: "SEU_PROJETO.firebaseapp.com",
-  databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
-  projectId: "SEU_PROJETO",
-  storageBucket: "SEU_PROJETO.appspot.com",
-  messagingSenderId: "000000000000",
-  appId: "SEU_APP_ID",
-};
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import {initializeApp} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import {getAnalytics} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyDZDEJza82gJpPYXrEI1xJVozmOTfuJMz0",
+  authDomain: "selfkill-counter.firebaseapp.com",
+  databaseURL: "https://selfkill-counter-default-rtdb.firebaseio.com",
+  projectId: "selfkill-counter",
+  storageBucket: "selfkill-counter.firebasestorage.app",
+  messagingSenderId: "964953874916",
+  appId: "1:964953874916:web:12c4aca29635022c7927f1",
+  measurementId: "G-0F6SC68ZZ5"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>

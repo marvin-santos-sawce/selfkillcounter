@@ -99,7 +99,7 @@ function tick() {
 
 function setSyncState(ok) {
   elSyncDot.classList.toggle('sync-dot--ok', ok);
-  elSyncLabel.textContent = ok ? 'Nosso time' : 'Sincronizando…';
+  elSyncLabel.textContent = ok ? 'CENTRALIDADE' : 'Sincronizando…';
 }
 
 function resetConfirmUI() {

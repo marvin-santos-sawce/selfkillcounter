@@ -7,6 +7,7 @@ import {
   onValue,
   get,
   set,
+  update,
   push,
   serverTimestamp,
 } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js';
@@ -81,7 +82,13 @@ function formatBrasiliaExact(epochMs) {
 
 function formatDays(ms) {
   const d = Math.floor(ms / 86400000);
-  return d + (d === 1 ? ' dia' : ' dias');
+  if (d > 0) return d + (d === 1 ? ' dia' : ' dias');
+  
+  const h = Math.floor((ms % 86400000) / 3600000);
+  if (h > 0) return h + (h === 1 ? ' hora' : ' horas');
+  
+  const m = Math.floor((ms % 3600000) / 60000);
+  return m + (m === 1 ? ' min' : ' mins');
 }
 
 function tick() {
@@ -144,8 +151,8 @@ onValue(counterRef, async (snapshot) => {
   const data = snapshot.val();
 
   if (!data || !data.resetEpoch) {
-    // Primeira vez que o contador é usado: inicializa no banco.
-    await set(counterRef, {
+    // Primeira vez que o contador é usado: inicializa no banco usando update pra não sobrescrever nada
+    await update(counterRef, {
       resetEpoch: serverTimestamp(),
       recordMs: 0,
       resetCount: 0,
@@ -195,7 +202,7 @@ btn.addEventListener('click', async () => {
     const newRecord = Math.max(data.recordMs || 0, diff);
     const newCount = (data.resetCount || 0) + 1;
 
-    await set(counterRef, {
+    await update(counterRef, {
       resetEpoch: serverTimestamp(),
       recordMs: newRecord,
       resetCount: newCount,

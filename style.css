@@ -1,15 +1,15 @@
 :root {
-  --ink: #3B2E38;
-  --paper: #FBF6F1;
-  --paper-deep: #F1E7DF;
-  --rose: #B8798A;
-  --rose-deep: #8C5468;
-  --wine: #7A3B52;
-  --wine-deep: #57273A;
-  --sage: #8CA090;
-  --taupe: #998A93;
-  --gold: #C9A876;
-  --line: #E4D6CC;
+  --ink: #3D3512;
+  --paper: #FFFDF0;
+  --paper-deep: #FFF3C4;
+  --rose: #F4D03F;
+  --rose-deep: #F1C40F;
+  --wine: #D4AC0D;
+  --wine-deep: #B7950B;
+  --sage: #7D6608;
+  --taupe: #9A7D0A;
+  --gold: #F1C40F;
+  --line: #F9E79F;
 }
 
 * {
@@ -32,7 +32,7 @@ body {
 
 .stage {
   width: 100%;
-  max-width: 640px;
+  max-width: 1200px;
   display: flex;
   flex-direction: column;
   align-items: center;

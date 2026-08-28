@@ -22,6 +22,15 @@ const counterRef = ref(db, 'accidentCounter');
 const historyRef = ref(db, 'accidentCounter/history');
 
 // ---------------------------------------------------------------
+// Compensar diferença de relógio local vs servidor Firebase (clock skew)
+// ---------------------------------------------------------------
+let serverTimeOffset = 0;
+const offsetRef = ref(db, '.info/serverTimeOffset');
+onValue(offsetRef, (snapshot) => {
+  serverTimeOffset = snapshot.val() || 0;
+});
+
+// ---------------------------------------------------------------
 // Elementos da página
 // ---------------------------------------------------------------
 const elDays = document.getElementById('val-days');
@@ -72,7 +81,8 @@ function formatDays(ms) {
 
 function tick() {
   if (!resetEpoch) return;
-  const diff = Math.max(0, Date.now() - resetEpoch);
+  const now = Date.now() + serverTimeOffset;
+  const diff = Math.max(0, now - resetEpoch);
 
   const days = Math.floor(diff / 86400000);
   const hours = Math.floor((diff % 86400000) / 3600000);
@@ -174,8 +184,9 @@ btn.addEventListener('click', async () => {
   try {
     const snap = await get(counterRef);
     const data = snap.val() || {};
-    const prevEpoch = data.resetEpoch || Date.now();
-    const diff = Date.now() - prevEpoch;
+    const now = Date.now() + serverTimeOffset;
+    const prevEpoch = data.resetEpoch || now;
+    const diff = now - prevEpoch;
     const newRecord = Math.max(data.recordMs || 0, diff);
     const newCount = (data.resetCount || 0) + 1;
 

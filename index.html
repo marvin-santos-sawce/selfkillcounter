@@ -1,93 +1,100 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dias sem acidentes</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dias sem acidentes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<div class="stage">
+  <div class="stage">
 
-  <div class="board">
-    <div class="ornament-row">
-      <svg width="46" height="14" viewBox="0 0 46 14" fill="none">
-        <path d="M2 12C10 12 14 2 22 2" stroke="#C9A876" stroke-width="1" stroke-linecap="round"/>
-        <circle cx="2" cy="12" r="1.6" fill="#C9A876"/>
-        <circle cx="8" cy="9.3" r="1.2" fill="#C9A876"/>
-        <circle cx="14" cy="5.6" r="1.2" fill="#C9A876"/>
-      </svg>
-      <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="#B8798A"/></svg>
-      <svg width="46" height="14" viewBox="0 0 46 14" fill="none">
-        <path d="M44 12C36 12 32 2 24 2" stroke="#C9A876" stroke-width="1" stroke-linecap="round"/>
-        <circle cx="44" cy="12" r="1.6" fill="#C9A876"/>
-        <circle cx="38" cy="9.3" r="1.2" fill="#C9A876"/>
-        <circle cx="32" cy="5.6" r="1.2" fill="#C9A876"/>
-      </svg>
+    <div class="board">
+      <div class="ornament-row">
+        <svg width="46" height="14" viewBox="0 0 46 14" fill="none">
+          <path d="M2 12C10 12 14 2 22 2" stroke="#C9A876" stroke-width="1" stroke-linecap="round" />
+          <circle cx="2" cy="12" r="1.6" fill="#C9A876" />
+          <circle cx="8" cy="9.3" r="1.2" fill="#C9A876" />
+          <circle cx="14" cy="5.6" r="1.2" fill="#C9A876" />
+        </svg>
+        <svg width="6" height="6" viewBox="0 0 6 6">
+          <circle cx="3" cy="3" r="3" fill="#B8798A" />
+        </svg>
+        <svg width="46" height="14" viewBox="0 0 46 14" fill="none">
+          <path d="M44 12C36 12 32 2 24 2" stroke="#C9A876" stroke-width="1" stroke-linecap="round" />
+          <circle cx="44" cy="12" r="1.6" fill="#C9A876" />
+          <circle cx="38" cy="9.3" r="1.2" fill="#C9A876" />
+          <circle cx="32" cy="5.6" r="1.2" fill="#C9A876" />
+        </svg>
+      </div>
+
+      <p class="eyebrow">
+        <span class="sync-dot" id="sync-dot"></span>
+        <span id="sync-label">SETEMBRO AMARELO DA CENTRALIDADE</span>
+      </p>
+      <h1 class="headline">Estamos há</h1>
+
+      <div class="counter-row">
+        <div class="unit days">
+          <span class="value" id="val-days">0</span>
+          <span class="label">dias</span>
+        </div>
+        <span class="colon">:</span>
+        <div class="unit hours">
+          <span class="value" id="val-hours">00</span>
+          <span class="label">horas</span>
+        </div>
+        <span class="colon">:</span>
+        <div class="unit minutes">
+          <span class="value" id="val-minutes">00</span>
+          <span class="label">min</span>
+        </div>
+        <span class="colon">:</span>
+        <div class="unit seconds">
+          <span class="value" id="val-seconds">00</span>
+          <span class="label">seg</span>
+        </div>
+      </div>
+
+      <h1 class="headline" style="margin-top:18px; margin-bottom:0;">sem acidentes</h1>
+
+      <div class="divider">
+        <span class="line"></span>
+        <span class="dot"></span>
+        <span class="line"></span>
+      </div>
+
+      <div class="meta">
+        <span>Desde <strong id="reset-since">—</strong></span>
+        <span>Recorde: <strong id="record-value">0 dias</strong></span>
+        <span>Reinícios: <strong id="reset-count">0</strong></span>
+      </div>
+
+      <div class="history-wrap">
+        <button type="button" id="history-toggle" class="history-toggle">Ver histórico de reinícios</button>
+        <ul id="history-list" class="history-list" hidden></ul>
+      </div>
     </div>
 
-    <p class="eyebrow">
-      <span class="sync-dot" id="sync-dot"></span>
-      <span id="sync-label">Sincronizando…</span>
-    </p>
-    <h1 class="headline">Estamos há</h1>
-
-    <div class="counter-row">
-      <div class="unit days">
-        <span class="value" id="val-days">0</span>
-        <span class="label">dias</span>
-      </div>
-      <span class="colon">:</span>
-      <div class="unit hours">
-        <span class="value" id="val-hours">00</span>
-        <span class="label">horas</span>
-      </div>
-      <span class="colon">:</span>
-      <div class="unit minutes">
-        <span class="value" id="val-minutes">00</span>
-        <span class="label">min</span>
-      </div>
-      <span class="colon">:</span>
-      <div class="unit seconds">
-        <span class="value" id="val-seconds">00</span>
-        <span class="label">seg</span>
-      </div>
-    </div>
-
-    <h1 class="headline" style="margin-top:18px; margin-bottom:0;">sem acidentes</h1>
-
-    <div class="divider">
-      <span class="line"></span>
-      <span class="dot"></span>
-      <span class="line"></span>
-    </div>
-
-    <div class="meta">
-      <span>Desde <strong id="reset-since">—</strong></span>
-      <span>Recorde: <strong id="record-value">0 dias</strong></span>
-      <span>Reinícios: <strong id="reset-count">0</strong></span>
-    </div>
-
-    <div class="history-wrap">
-      <button type="button" id="history-toggle" class="history-toggle">Ver histórico de reinícios</button>
-      <ul id="history-list" class="history-list" hidden></ul>
+    <div class="reset-wrap">
+      <button class="reset-btn" id="reset-btn">
+        <span class="reset-icon">↻</span>
+        <span id="reset-label">Reiniciar contagem</span>
+      </button>
+      <p class="hint" id="reset-hint">Toque para confirmar</p>
     </div>
   </div>
 
-  <div class="reset-wrap">
-    <button class="reset-btn" id="reset-btn">
-      <span class="reset-icon">↻</span>
-      <span id="reset-label">Reiniciar contagem</span>
-    </button>
-    <p class="hint" id="reset-hint">Toque para confirmar</p>
-  </div>
-</div>
-
-<!-- Módulo com sua config do Firebase (edite este arquivo) -->
-<script type="module" src="firebase-config.js"></script>
-<script type="module" src="script.js"></script>
+  <!-- Módulo com sua config do Firebase (edite este arquivo) -->
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
+
 </html>

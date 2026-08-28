@@ -20,6 +20,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const counterRef = ref(db, 'accidentCounter');
 const historyRef = ref(db, 'accidentCounter/history');
+const chatMessagesRef = ref(db, 'chatMessages');
 
 // ---------------------------------------------------------------
 // Compensar diferença de relógio local vs servidor Firebase (clock skew)
@@ -47,6 +48,10 @@ const btnLabel = document.getElementById('reset-label');
 const hint = document.getElementById('reset-hint');
 const historyToggle = document.getElementById('history-toggle');
 const historyList = document.getElementById('history-list');
+const chatNameInput = document.getElementById('chat-name');
+const chatMessagesContainer = document.getElementById('chat-messages');
+const chatForm = document.getElementById('chat-form');
+const chatInput = document.getElementById('chat-input');
 
 // ---------------------------------------------------------------
 // Estado local (espelha o que está no Firebase)
@@ -214,6 +219,75 @@ historyToggle.addEventListener('click', () => {
   } else {
     historyList.setAttribute('hidden', '');
     historyToggle.textContent = 'Ver histórico de reinícios';
+  }
+});
+
+// ---------------------------------------------------------------
+// Live Chat Universal
+// ---------------------------------------------------------------
+const savedName = localStorage.getItem('chatName');
+if (savedName) {
+  chatNameInput.value = savedName;
+}
+
+chatNameInput.addEventListener('input', (e) => {
+  localStorage.setItem('chatName', e.target.value);
+});
+
+onValue(chatMessagesRef, (snapshot) => {
+  chatMessagesContainer.innerHTML = '';
+  const messagesObj = snapshot.val() || {};
+  
+  // Converter para array e ordenar por data
+  const messages = Object.values(messagesObj).sort((a, b) => a.epoch - b.epoch);
+  
+  messages.forEach(msg => {
+    // Definimos como "minha mensagem" se o nome for igual ao salvo,
+    // mas se o nome estiver vazio ignoramos
+    const myName = chatNameInput.value.trim();
+    const isMine = myName !== '' && msg.name === myName;
+    
+    const div = document.createElement('div');
+    div.className = `chat-msg ${isMine ? 'mine' : ''}`;
+    
+    const timeStr = msg.epoch ? new Date(msg.epoch).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+    
+    div.innerHTML = `
+      <div class="chat-msg-header">
+        <span class="chat-msg-author">${msg.name || 'Anônimo'}</span>
+        <span class="chat-msg-time">${timeStr}</span>
+      </div>
+      <div class="chat-msg-text"></div>
+    `;
+    
+    // Setando textContent para prevenir XSS
+    div.querySelector('.chat-msg-text').textContent = msg.text;
+    
+    chatMessagesContainer.appendChild(div);
+  });
+  
+  // Auto-scroll para o final
+  chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+});
+
+chatForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const text = chatInput.value.trim();
+  const name = chatNameInput.value.trim() || 'Anônimo';
+  
+  if (!text) return;
+  
+  try {
+    await push(chatMessagesRef, {
+      name,
+      text,
+      // Se não tivermos o servidor syncado ainda, usamos Date.now() + offset, 
+      // mas serverTimestamp() é o padrão do firebase.
+      epoch: serverTimestamp()
+    });
+    chatInput.value = '';
+  } catch (err) {
+    console.error('Falha ao enviar mensagem', err);
   }
 });
 

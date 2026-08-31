@@ -22,6 +22,7 @@ const db = getDatabase(app);
 const counterRef = ref(db, 'accidentCounter');
 const historyRef = ref(db, 'accidentCounter/history');
 const chatMessagesRef = ref(db, 'chatMessages');
+const activeNamesRef = ref(db, 'activeNames');
 
 // ---------------------------------------------------------------
 // Compensar diferença de relógio local vs servidor Firebase (clock skew)
@@ -53,6 +54,21 @@ const chatNameInput = document.getElementById('chat-name');
 const chatMessagesContainer = document.getElementById('chat-messages');
 const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
+const chatNameCounter = document.getElementById('chat-name-counter');
+
+// ---------------------------------------------------------------
+// ID único por sessão/navegador para identificar o autor real
+// ---------------------------------------------------------------
+function getOrCreateUserId() {
+  let id = localStorage.getItem('chatUserId');
+  if (!id) {
+    id = crypto.randomUUID ? crypto.randomUUID() :
+      'u-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem('chatUserId', id);
+  }
+  return id;
+}
+const myUserId = getOrCreateUserId();
 
 // ---------------------------------------------------------------
 // Estado local (espelha o que está no Firebase)
@@ -83,10 +99,10 @@ function formatBrasiliaExact(epochMs) {
 function formatDays(ms) {
   const d = Math.floor(ms / 86400000);
   if (d > 0) return d + (d === 1 ? ' dia' : ' dias');
-  
+
   const h = Math.floor((ms % 86400000) / 3600000);
   if (h > 0) return h + (h === 1 ? ' hora' : ' horas');
-  
+
   const m = Math.floor((ms % 3600000) / 60000);
   return m + (m === 1 ? ' min' : ' mins');
 }
@@ -238,27 +254,33 @@ if (savedName) {
 }
 
 chatNameInput.addEventListener('input', (e) => {
+  // Enforce maxlength em JS também
+  if (e.target.value.length > 20) {
+    e.target.value = e.target.value.slice(0, 20);
+  }
   localStorage.setItem('chatName', e.target.value);
+  chatNameCounter.textContent = `${e.target.value.length}/20`;
 });
+
+// Inicializar contador
+chatNameCounter.textContent = `${chatNameInput.value.length}/20`;
 
 onValue(chatMessagesRef, (snapshot) => {
   chatMessagesContainer.innerHTML = '';
   const messagesObj = snapshot.val() || {};
-  
+
   // Converter para array e ordenar por data
   const messages = Object.values(messagesObj).sort((a, b) => a.epoch - b.epoch);
-  
+
   messages.forEach(msg => {
-    // Definimos como "minha mensagem" se o nome for igual ao salvo,
-    // mas se o nome estiver vazio ignoramos
-    const myName = chatNameInput.value.trim();
-    const isMine = myName !== '' && msg.name === myName;
-    
+    // Usar userId para determinar se a mensagem é minha (corrige bug de nomes iguais)
+    const isMine = msg.userId === myUserId;
+
     const div = document.createElement('div');
     div.className = `chat-msg ${isMine ? 'mine' : ''}`;
-    
+
     const timeStr = msg.epoch ? new Date(msg.epoch).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
-    
+
     div.innerHTML = `
       <div class="chat-msg-header">
         <span class="chat-msg-author">${msg.name || 'Anônimo'}</span>
@@ -266,13 +288,13 @@ onValue(chatMessagesRef, (snapshot) => {
       </div>
       <div class="chat-msg-text"></div>
     `;
-    
+
     // Setando textContent para prevenir XSS
     div.querySelector('.chat-msg-text').textContent = msg.text;
-    
+
     chatMessagesContainer.appendChild(div);
   });
-  
+
   // Auto-scroll para o final
   chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
 });
@@ -281,15 +303,44 @@ chatForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const text = chatInput.value.trim();
   const name = chatNameInput.value.trim() || 'Anônimo';
-  
+
   if (!text) return;
-  
+
+  // Verificar se o nome já está sendo usado por outra pessoa
+  if (name !== 'Anônimo') {
+    try {
+      const namesSnap = await get(activeNamesRef);
+      const namesData = namesSnap.val() || {};
+      const nameLower = name.toLowerCase();
+
+      for (const [uid, info] of Object.entries(namesData)) {
+        if (uid !== myUserId && info.name && info.name.toLowerCase() === nameLower) {
+          // Nome já em uso por outra pessoa
+          chatNameInput.classList.add('name-error');
+          chatNameInput.placeholder = 'Nome já em uso!';
+          setTimeout(() => {
+            chatNameInput.classList.remove('name-error');
+            chatNameInput.placeholder = 'Identifique-se';
+          }, 2000);
+          return;
+        }
+      }
+
+      // Registrar/atualizar meu nome no banco
+      await set(ref(db, `activeNames/${myUserId}`), {
+        name: name,
+        lastSeen: serverTimestamp()
+      });
+    } catch (err) {
+      console.error('Erro ao verificar nome:', err);
+    }
+  }
+
   try {
     await push(chatMessagesRef, {
       name,
       text,
-      // Se não tivermos o servidor syncado ainda, usamos Date.now() + offset, 
-      // mas serverTimestamp() é o padrão do firebase.
+      userId: myUserId,
       epoch: serverTimestamp()
     });
     chatInput.value = '';

@@ -99,7 +99,15 @@
 
       <div class="chat-name-wrap">
         <label for="chat-name">Nome:</label>
-        <input type="text" id="chat-name" placeholder="Identifique-se" />
+        <input type="text" id="chat-name" placeholder="Identifique-se" maxlength="15" />
+        <span class="chat-name-counter" id="chat-name-counter">0/15</span>
+      </div>
+
+      <div class="chat-notice" id="chat-notice">
+        <span class="chat-notice-icon">⚠️</span>
+        <span>Proibido fingir ser quem não é</span>
+        <span>Reinícios falsos serão punidos com paulada</span>
+        <span>Thiago possui 1 advertência, na terceira, será espancado</span>
       </div>
 
       <div class="chat-messages" id="chat-messages">

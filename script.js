@@ -255,15 +255,15 @@ if (savedName) {
 
 chatNameInput.addEventListener('input', (e) => {
   // Enforce maxlength em JS também
-  if (e.target.value.length > 20) {
-    e.target.value = e.target.value.slice(0, 20);
+  if (e.target.value.length > 15) {
+    e.target.value = e.target.value.slice(0, 15);
   }
   localStorage.setItem('chatName', e.target.value);
-  chatNameCounter.textContent = `${e.target.value.length}/20`;
+  chatNameCounter.textContent = `${e.target.value.length}/15`;
 });
 
 // Inicializar contador
-chatNameCounter.textContent = `${chatNameInput.value.length}/20`;
+chatNameCounter.textContent = `${chatNameInput.value.length}/15`;
 
 onValue(chatMessagesRef, (snapshot) => {
   chatMessagesContainer.innerHTML = '';

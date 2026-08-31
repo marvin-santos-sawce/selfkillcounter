@@ -261,6 +261,31 @@ body {
 
 .history-list li {
   font-variant-numeric: tabular-nums;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.history-list li:last-child {
+  border-bottom: none;
+}
+
+.history-date {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.history-who {
+  font-size: 10px;
+  color: var(--taupe);
+  font-weight: 400;
+}
+
+.history-who strong {
+  color: var(--wine-deep);
+  font-weight: 700;
 }
 
 .history-empty {

@@ -71,6 +71,22 @@ function getOrCreateUserId() {
 const myUserId = getOrCreateUserId();
 
 // ---------------------------------------------------------------
+// Obter IP público do visitante (para rastreio de reinícios)
+// ---------------------------------------------------------------
+let cachedIP = null;
+async function getPublicIP() {
+  if (cachedIP) return cachedIP;
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    const data = await res.json();
+    cachedIP = data.ip;
+    return cachedIP;
+  } catch {
+    return 'desconhecido';
+  }
+}
+
+// ---------------------------------------------------------------
 // Estado local (espelha o que está no Firebase)
 // ---------------------------------------------------------------
 let resetEpoch = null;
@@ -154,7 +170,10 @@ function renderHistory(historyObj) {
 
   entries.forEach((entry) => {
     const li = document.createElement('li');
-    li.textContent = formatBrasiliaExact(entry.epoch);
+    const dateStr = formatBrasiliaExact(entry.epoch);
+    const who = entry.chatName || entry.userId?.slice(0, 8) || '???';
+    const ip = entry.ip ? ` · IP: ${entry.ip}` : '';
+    li.innerHTML = `<span class="history-date">${dateStr}</span> <span class="history-who">por <strong>${who}</strong>${ip}</span>`;
     historyList.appendChild(li);
   });
 }
@@ -224,7 +243,14 @@ btn.addEventListener('click', async () => {
       resetCount: newCount,
     });
 
-    await push(historyRef, { epoch: serverTimestamp() });
+    const resetName = chatNameInput.value.trim() || 'Anônimo';
+    const resetIP = await getPublicIP();
+    await push(historyRef, {
+      epoch: serverTimestamp(),
+      userId: myUserId,
+      chatName: resetName,
+      ip: resetIP,
+    });
   } catch (err) {
     console.error('Falha ao sincronizar reinício:', err);
     hint.textContent = 'Falha ao sincronizar — tente novamente';

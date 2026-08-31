@@ -171,7 +171,7 @@ function renderHistory(historyObj) {
   entries.forEach((entry) => {
     const li = document.createElement('li');
     const dateStr = formatBrasiliaExact(entry.epoch);
-    const who = entry.chatName || entry.userId?.slice(0, 8) || '???';
+    const who = entry.chatName || entry.userId?.slice(0, 8) || 'desconhecido';
     li.innerHTML = `<span class="history-date">${dateStr}</span> <span class="history-who">por <strong>${who}</strong></span>`;
     historyList.appendChild(li);
   });

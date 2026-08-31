@@ -172,8 +172,7 @@ function renderHistory(historyObj) {
     const li = document.createElement('li');
     const dateStr = formatBrasiliaExact(entry.epoch);
     const who = entry.chatName || entry.userId?.slice(0, 8) || '???';
-    const ip = entry.ip ? ` · IP: ${entry.ip}` : '';
-    li.innerHTML = `<span class="history-date">${dateStr}</span> <span class="history-who">por <strong>${who}</strong>${ip}</span>`;
+    li.innerHTML = `<span class="history-date">${dateStr}</span> <span class="history-who">por <strong>${who}</strong></span>`;
     historyList.appendChild(li);
   });
 }

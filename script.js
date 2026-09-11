@@ -23,6 +23,7 @@ const counterRef = ref(db, 'accidentCounter');
 const historyRef = ref(db, 'accidentCounter/history');
 const chatMessagesRef = ref(db, 'chatMessages');
 const activeNamesRef = ref(db, 'activeNames');
+const bannedUsersRef = ref(db, 'bannedUsers');
 
 // ---------------------------------------------------------------
 // Compensar diferença de relógio local vs servidor Firebase (clock skew)
@@ -95,6 +96,89 @@ let resetCount = 0;
 let confirming = false;
 let confirmTimeout = null;
 let resetting = false;
+let isBanned = false;
+let banReason = '';
+
+// ---------------------------------------------------------------
+// Elementos do sistema de ban
+// ---------------------------------------------------------------
+const banBanner = document.getElementById('ban-banner');
+const banReasonEl = document.getElementById('ban-reason');
+
+// ---------------------------------------------------------------
+// Sistema de Banimento (3 camadas: browserId + IP + activeName)
+// ---------------------------------------------------------------
+function applyBanUI(reason) {
+  isBanned = true;
+  banReason = reason || 'Mau comportamento';
+
+  // Mostrar banner
+  banBanner.removeAttribute('hidden');
+  banReasonEl.textContent = banReason;
+
+  // Desabilitar botão de reset
+  btn.disabled = true;
+  btn.classList.add('banned');
+
+  // Desabilitar formulário de chat
+  chatForm.classList.add('banned');
+  chatInput.disabled = true;
+  chatInput.placeholder = 'Você está banido do chat';
+}
+
+function removeBanUI() {
+  isBanned = false;
+  banReason = '';
+
+  // Esconder banner
+  banBanner.setAttribute('hidden', '');
+
+  // Reabilitar botão de reset
+  btn.disabled = false;
+  btn.classList.remove('banned');
+
+  // Reabilitar formulário de chat
+  chatForm.classList.remove('banned');
+  chatInput.disabled = false;
+  chatInput.placeholder = 'No mínimo peça desculpas...';
+}
+
+// Listener em tempo real: reage a bans adicionados/removidos enquanto online
+onValue(bannedUsersRef, async (snapshot) => {
+  const bans = snapshot.val();
+  if (!bans) {
+    removeBanUI();
+    return;
+  }
+
+  const userIP = await getPublicIP();
+  let foundBan = null;
+
+  for (const [key, ban] of Object.entries(bans)) {
+    // Checar se o ban expirou
+    if (ban.expiresAt && ban.expiresAt < Date.now()) {
+      continue; // Ban expirado, ignora
+    }
+
+    // Camada 1: Browser ID
+    if (key === myUserId) {
+      foundBan = ban;
+      break;
+    }
+
+    // Camada 2: IP
+    if (ban.ip && ban.ip === userIP) {
+      foundBan = ban;
+      break;
+    }
+  }
+
+  if (foundBan) {
+    applyBanUI(foundBan.reason);
+  } else {
+    removeBanUI();
+  }
+});
 
 function pad(n) {
   return String(n).padStart(2, '0');
@@ -213,6 +297,12 @@ onValue(historyRef, (snapshot) => {
 // Botão de reiniciar (confirmação dupla antes de gravar)
 // ---------------------------------------------------------------
 btn.addEventListener('click', async () => {
+  // Bloqueio de ban
+  if (isBanned) {
+    hint.textContent = '🚫 Você está banido e não pode reiniciar';
+    return;
+  }
+
   if (!confirming) {
     confirming = true;
     btn.classList.add('confirm');
@@ -326,6 +416,10 @@ onValue(chatMessagesRef, (snapshot) => {
 
 chatForm.addEventListener('submit', async (e) => {
   e.preventDefault();
+
+  // Bloqueio de ban
+  if (isBanned) return;
+
   const text = chatInput.value.trim();
   const name = chatNameInput.value.trim() || 'Anônimo';
 

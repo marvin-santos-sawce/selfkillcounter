@@ -627,3 +627,73 @@ body {
     transition: none;
   }
 }
+
+/* ---------------------------------------------------------------
+   Ban System
+   --------------------------------------------------------------- */
+.ban-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #fdecea, #f9d6d2);
+  border: 1px solid #e74c3c;
+  border-radius: 10px;
+  padding: 10px 14px;
+  animation: banFadeIn 0.4s ease;
+}
+
+.ban-banner-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.ban-banner-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ban-banner-content strong {
+  font-size: 12px;
+  color: #c0392b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ban-banner-reason {
+  font-size: 11px;
+  color: #943126;
+  font-weight: 500;
+}
+
+@keyframes banFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Disabled states when banned */
+.reset-btn:disabled,
+.reset-btn.banned {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.6);
+}
+
+.chat-form.banned #chat-input {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.chat-form.banned .chat-send-btn {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}

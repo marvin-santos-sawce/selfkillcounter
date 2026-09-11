@@ -140,9 +140,13 @@ body {
   font-optical-sizing: auto;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
   font-size: clamp(46px, 13vw, 220px);
   line-height: 0.95;
   color: var(--wine);
+  display: inline-block;
+  text-align: center;
+  min-width: 1.5ch;
 }
 
 .unit.hours .value,
@@ -152,6 +156,7 @@ body {
   font-weight: 400;
   color: var(--rose-deep);
   opacity: 0.85;
+  min-width: 2.2ch;
 }
 
 .unit .label {

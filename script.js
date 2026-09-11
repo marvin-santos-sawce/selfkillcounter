@@ -155,8 +155,9 @@ onValue(bannedUsersRef, async (snapshot) => {
   let foundBan = null;
 
   for (const [key, ban] of Object.entries(bans)) {
-    // Checar se o ban expirou
-    if (ban.expiresAt && ban.expiresAt < Date.now()) {
+    // Checar se o ban expirou (só se expiresAt for um número válido > 0)
+    const expires = Number(ban.expiresAt);
+    if (expires > 0 && expires < Date.now()) {
       continue; // Ban expirado, ignora
     }
 

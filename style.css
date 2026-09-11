@@ -642,6 +642,10 @@ body {
   animation: banFadeIn 0.4s ease;
 }
 
+.ban-banner[hidden] {
+  display: none !important;
+}
+
 .ban-banner-icon {
   font-size: 20px;
   flex-shrink: 0;
